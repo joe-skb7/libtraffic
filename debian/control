@@ -1,0 +1,42 @@
+Source: libtrl
+Section: libs
+Priority: optional
+Maintainer: Sam Protsenko <joe.skb7@gmail.com>
+Build-Depends: debhelper (>= 11), libftdi1-dev, pkg-config
+Standards-Version: 4.1.4
+Homepage: https://github.com/joe-skb7/libtrl
+
+Package: libtrl0
+Section: libs
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description:  Library for controlling traffic lights
+ Library for controlling traffic lights on GlobalLogic automotive hackathon.
+ .
+ Traffic lights are wired to interface board (it's in development right now,
+ will be published as Open Hardware on GitHub later). The chain is next:
+ .
+ PC -> FT232 cable -> interface board -> traffic lights
+ .
+ So by issuing this lib API routines you can switch traffic lights colors
+ (red/green). Basically, when running this library functions, you specify
+ desired color for chosen traffic light number. The library will generate
+ correct serial code, send it via FT232 cable GPIO lines to shift register
+ on interface board, which in turn will enable corresponding LED lines, so
+ that desired traffic light displays desired color.
+ .
+ This package contains what you need to run programs that use this library
+ (i.e. the library itself).
+
+Package: libtrl-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: same
+Depends: libtrl0 (= ${binary:Version}), ${misc:Depends}
+Description: Development files for libtrl
+ Library for controlling traffic lights on GlobalLogic automotive hackathon.
+ .
+ This package contains what you need for compiling sources that use this
+ library in your own code (i.e. header files and static library).

@@ -1,0 +1,4 @@
+usr/include/trl.h
+usr/lib/*/libtrl.a
+usr/lib/*/libtrl.so
+usr/lib/*/pkgconfig/libtrl.pc

@@ -1,8 +1,9 @@
 # libtrl
 
-## Description
+## Overview
 
-C library for controlling traffic lights on GlobalLogic automotive hackathon.
+C library for controlling traffic lights on GlobalLogic automotive hackathon
+(see [1]).
 
 Traffic lights are wired to interface board (it's in development right now,
 will be published as Open Hardware on GitHub later). The chain is next:
@@ -18,7 +19,38 @@ desired traffic light displays desired color.
 
 Details will come further.
 
-## Links
+## Prebuilt packages
+
+TODO
+
+## Building the library
+
+1. Install dependencies:
+
+```
+    $ sudo aptitude install libftdi1-2 libftdi1-dev devscripts pbuilder
+```
+
+2. Build and install Debian package:
+
+```
+    $ make debian
+    $ sudo dpkg -i ../*.deb
+```
+
+## udev rules
+
+TODO
+
+## Authors
+
+**Sam Protsenko**
+
+## License
+
+The project is licensed under the GPLv2.
+
+## References
 
 [1] https://www.globallogic.com/ua/news/globallogic-kyiv-smart-city-hackathon/
 
