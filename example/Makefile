@@ -1,5 +1,7 @@
 APP = example
 CFLAGS = -Wall -O2
+
+# Link with libtrl
 CFLAGS += $(shell pkg-config --cflags libtrl)
 LDLIBS += $(shell pkg-config --libs libtrl)
 
