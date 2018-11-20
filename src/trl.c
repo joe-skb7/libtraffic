@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define LIB_NAME	"libtrl"
+
 #define PIN_TX		0x01  /* Orange wire on FTDI cable */
 #define PIX_RX		0x02  /* Yellow */
 #define PIN_RTS		0x04  /* Green */
@@ -23,6 +25,12 @@
 #define LED		PIN_CTS
 #define DELAY		1000	/* msec */
 
+#define TRL_LOG(f, fmt, ...)						\
+	do {								\
+		fprintf(f, "%s: %s: " fmt,				\
+			LIB_NAME, __func__, ## __VA_ARGS__);		\
+	} while (0)
+
 struct trl {
 	struct ftdi_context *ftdi;	/* libftdi object */
 	uint16_t state;			/* current traffic lights states */
@@ -35,19 +43,19 @@ int trl_init(void)
 	int res, ret;
 
 	if (trl.ftdi != NULL) {
-		fprintf(stderr, "Error: trl_init() was already invoked\n");
+		TRL_LOG(stderr, "Error: trl_init() was already invoked\n");
 		return -1;
 	}
 
 	trl.ftdi = ftdi_new();
 	if (trl.ftdi == NULL) {
-		fprintf(stderr, "Error: Can't allocate memory for FTDI obj\n");
+		TRL_LOG(stderr, "Error: Can't allocate memory for FTDI obj\n");
 		return -2;
 	}
 
 	res = ftdi_usb_open(trl.ftdi, FTDI_VID, FTDI_PID);
 	if (res < 0) {
-		fprintf(stderr, "Error: Unable to open FTDI device: %d (%s)\n",
+		TRL_LOG(stderr, "Error: Unable to open FTDI device: %d (%s)\n",
 				res, ftdi_get_error_string(trl.ftdi));
 		ret = -3;
 		goto err1;
@@ -55,7 +63,7 @@ int trl_init(void)
 
 	res = ftdi_set_bitmode(trl.ftdi, 0xff, BITMODE_BITBANG);
 	if (res < 0) {
-		fprintf(stderr, "Error: Can't enable bitbang\n");
+		TRL_LOG(stderr, "Error: Can't enable bitbang\n");
 		ret = -4;
 		goto err2;
 	}
@@ -73,7 +81,7 @@ err1:
 int trl_set_one(int num, int state)
 {
 	/* XXX: Remove */
-	printf("libtrl: trl_set_one() stub\n");
+	TRL_LOG(stdout, "stub\n");
 	(void)num;
 	(void)state;
 	return 0;
@@ -83,7 +91,7 @@ int trl_set_one(int num, int state)
 int trl_set_burst(uint16_t mask)
 {
 	/* XXX: Remove */
-	printf("libtrl: trl_set_burst() stub\n");
+	TRL_LOG(stdout, "stub\n");
 	(void)mask;
 	return 0;
 }
@@ -108,7 +116,7 @@ int main(void)
 		data ^= LED;
 		res = ftdi_write_data(ftdi, &data, 1);
 		if (res < 0) {
-			fprintf(stderr, "Error: Write failed for 0x%x: %s\n",
+			TRL_LOG(stderr, "Error: Write failed for 0x%x: %s\n",
 					data, ftdi_get_error_string(ftdi));
 			ret = EXIT_FAILURE;
 			goto err3;
