@@ -27,6 +27,9 @@ EXPORT int trl_init(void);
 /**
  * Change the state of one specific traffic light.
  *
+ * If you run this function from different threads, make sure to provide
+ * necessary locking in your code.
+ *
  * @param num Traffic light number; can be 0..TRL_COUNT-1
  * @param state Can be either TRL_STATE_RED or TRL_STATE_GREEN
  *
@@ -36,6 +39,9 @@ EXPORT int trl_set_one(int num, int state);
 
 /**
  * Change the state of all traffic lights in one call.
+ *
+ * If you run this function from different threads, make sure to provide
+ * necessary locking in your code.
  *
  * @param mask Bit mask of traffic lights states; e.g.:
  *             0xffff - all traffic lights are green
