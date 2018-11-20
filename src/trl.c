@@ -1,9 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0
 #include <trl.h>
 #include <tools.h>
+
 #include <libftdi1/ftdi.h>
+
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define PIN_TX		0x01  /* Orange wire on FTDI cable */
 #define PIX_RX		0x02  /* Yellow */
@@ -19,25 +23,66 @@
 #define LED		PIN_CTS
 #define DELAY		1000	/* msec */
 
+struct trl {
+	struct ftdi_context *ftdi;	/* libftdi object */
+	uint16_t state;			/* current traffic lights states */
+};
+
+static struct trl trl;
+
 int trl_init(void)
 {
-	/* TODO: Implement this one */
-	printf("libtrl: trl_init() stub\n");
+	int res, ret;
+
+	if (trl.ftdi != NULL) {
+		fprintf(stderr, "Error: trl_init() was already invoked\n");
+		return -1;
+	}
+
+	trl.ftdi = ftdi_new();
+	if (trl.ftdi == NULL) {
+		fprintf(stderr, "Error: Can't allocate memory for FTDI obj\n");
+		return -2;
+	}
+
+	res = ftdi_usb_open(trl.ftdi, FTDI_VID, FTDI_PID);
+	if (res < 0) {
+		fprintf(stderr, "Error: Unable to open FTDI device: %d (%s)\n",
+				res, ftdi_get_error_string(trl.ftdi));
+		ret = -3;
+		goto err1;
+	}
+
+	res = ftdi_set_bitmode(trl.ftdi, 0xff, BITMODE_BITBANG);
+	if (res < 0) {
+		fprintf(stderr, "Error: Can't enable bitbang\n");
+		ret = -4;
+		goto err2;
+	}
+
 	return 0;
+
+err2:
+	ftdi_usb_close(trl.ftdi);
+err1:
+	ftdi_free(trl.ftdi);
+	return ret;
 }
 
+/* TODO: Implement this one */
 int trl_set_one(int num, int state)
 {
-	/* TODO: Implement this one */
+	/* XXX: Remove */
 	printf("libtrl: trl_set_one() stub\n");
 	(void)num;
 	(void)state;
 	return 0;
 }
 
+/* TODO: Implement this one */
 int trl_set_burst(uint16_t mask)
 {
-	/* TODO: Implement this one */
+	/* XXX: Remove */
 	printf("libtrl: trl_set_burst() stub\n");
 	(void)mask;
 	return 0;
@@ -45,8 +90,10 @@ int trl_set_burst(uint16_t mask)
 
 void trl_exit(void)
 {
-	/* TODO: Implement this one */
-	printf("libtrl: trl_exit() stub\n");
+	ftdi_disable_bitbang(trl.ftdi);
+	ftdi_usb_close(trl.ftdi);
+	ftdi_free(trl.ftdi);
+	memset(&trl, 0, sizeof(struct trl));
 }
 
 #if 0
@@ -56,27 +103,6 @@ int main(void)
 	int res, ret;
 	int i;
 	unsigned char data = 0;
-
-	ftdi = ftdi_new();
-	if (ftdi == NULL) {
-		fprintf(stderr, "Error: Can't allocate memory for FTDI\n");
-		return EXIT_FAILURE;
-	}
-
-	res = ftdi_usb_open(ftdi, FTDI_VID, FTDI_PID);
-	if (res < 0) {
-		fprintf(stderr, "Error: Unable to open FTDI device: %d (%s)\n",
-				res, ftdi_get_error_string(ftdi));
-		ret = EXIT_FAILURE;
-		goto err1;
-	}
-
-	res = ftdi_set_bitmode(ftdi, 0xff, BITMODE_BITBANG);
-	if (res < 0) {
-		fprintf(stderr, "Error: Can't enable bitbang\n");
-		ret = EXIT_FAILURE;
-		goto err2;
-	}
 
 	for (i = 0; i < 10; ++i) {
 		data ^= LED;
@@ -89,13 +115,5 @@ int main(void)
 		}
 		msleep(DELAY);
 	}
-
-err3:
-	ftdi_disable_bitbang(ftdi);
-err2:
-	ftdi_usb_close(ftdi);
-err1:
-	ftdi_free(ftdi);
-	return ret;
 }
 #endif
