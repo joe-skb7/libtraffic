@@ -70,7 +70,7 @@ INSTALL		:= install -m 0755
 INSTALL_DATA	:= install -m 0644
 
 SOURCES =			\
-	src/main.c		\
+	src/trl.c		\
 	src/tools.c
 
 OBJS = $(SOURCES:%.c=%.o)
