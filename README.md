@@ -18,7 +18,7 @@ interface board, which in turn will enable corresponding LED lines, so that
 desired traffic light displays desired color.
 
 Hardware files for interface board and traffic light PCB can be found here:
-https://github.com/joe-skb7/traffic-light
+https://github.com/joe-skb7/traffic-light-pcb
 
 ## Prebuilt packages
 
