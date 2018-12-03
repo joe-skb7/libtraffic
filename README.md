@@ -5,20 +5,18 @@
 C library for controlling traffic lights on GlobalLogic automotive hackathon
 (see [1]).
 
-Traffic lights are wired to interface board (it's in development right now,
-will be published as Open Hardware on GitHub later). The chain is next:
+Traffic lights are wired to interface board [3]. The chain is next:
 
-    PC -> FT232 cable -> interface board -> traffic lights
+    PC -> interface board -> traffic light boards
 
 So by issuing this lib API routines you can switch traffic lights colors
 (red/green). Basically, when running this library functions, you specify
 desired color for chosen traffic light number. The library will generate
-correct serial code, send it via FT232 cable GPIO lines to shift register on
+correct serial code, send it via FT232 GPIO lines to shift register on
 interface board, which in turn will enable corresponding LED lines, so that
 desired traffic light displays desired color.
 
-Hardware files for interface board and traffic light PCB can be found here:
-https://github.com/joe-skb7/traffic-light-pcb
+Hardware files for interface board and traffic light PCB can be found here: [3].
 
 ## Prebuilt packages
 
@@ -56,3 +54,5 @@ The project is licensed under the GPLv2.
 [1] https://www.globallogic.com/ua/news/globallogic-kyiv-smart-city-hackathon/
 
 [2] https://hackaday.com/2009/09/22/introduction-to-ftdi-bitbang-mode/
+
+[3] https://github.com/joe-skb7/traffic-light-pcb
