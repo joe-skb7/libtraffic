@@ -151,6 +151,12 @@ void trl_exit(void)
 {
 	assert(trl.ftdi != NULL);
 
+	/*
+	 * FIXME: Without this sleep last ftdi_write_data() doesn't finish
+	 *        correctly.
+	 */
+	msleep(100);
+
 	ftdi_disable_bitbang(trl.ftdi);
 	ftdi_usb_close(trl.ftdi);
 	ftdi_free(trl.ftdi);
