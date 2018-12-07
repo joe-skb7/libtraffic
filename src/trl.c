@@ -39,9 +39,6 @@
 /* Number of shift registers */
 #define REG_NUM		2
 
-#define BIT(n)		(1 << (n))
-#define ARRAY_SIZE(a)	(sizeof(a) / sizeof(a[0]))
-
 #define TRL_LOG(f, fmt, ...)						\
 	do {								\
 		fprintf(f, "%s: %s: " fmt,				\
@@ -103,16 +100,17 @@ err1:
 	return ret;
 }
 
-/* TODO: Implement this one */
 int trl_set_one(int num, int state)
 {
-	assert(trl.ftdi != NULL);
+	uint16_t new_state;
 
-	/* XXX: Remove */
-	TRL_LOG(stdout, "stub\n");
-	(void)num;	/* Unused */
-	(void)state;	/* Unused */
-	return 0;
+	assert(num >= 0 && num < TRL_COUNT);
+	assert(state == TRL_STATE_RED || state == TRL_STATE_GREEN);
+
+	new_state = set_bit(trl.state, num, state);
+
+	/* trl_set_burst() will set trl.state to new value for us */
+	return trl_set_burst(new_state);
 }
 
 int trl_set_burst(uint16_t mask)
@@ -158,6 +156,8 @@ int trl_set_burst(uint16_t mask)
 			ftdi_get_error_string(trl.ftdi));
 		return -1;
 	}
+
+	trl.state = mask;
 
 	return 0;
 }

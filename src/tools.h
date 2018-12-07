@@ -2,6 +2,11 @@
 #ifndef TOOLS_H
 #define TOOLS_H
 
+#include <stdint.h>
+
+#define BIT(n)		(1 << (n))
+#define ARRAY_SIZE(a)	(sizeof(a) / sizeof(a[0]))
+
 enum str2int_err {
 	STR2INT_SUCCESS		= 0,
 	STR2INT_OVERFLOW	= -1,
@@ -9,6 +14,7 @@ enum str2int_err {
 	STR2INT_INCONVERTIBLE	= -3
 };
 
+uint16_t set_bit(uint16_t var, unsigned offset, unsigned value);
 void msleep(int msec);
 int str2int(int *out, char *s, int base);
 

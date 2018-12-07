@@ -9,6 +9,22 @@
 #include <time.h>
 
 /**
+ * Change one bit in variable.
+ *
+ * @param var Current value of variable
+ * @param offset Bit number you want to change
+ * @param value New bit value (0 or 1)
+ * @return New value of the variable (with changed bit)
+ */
+uint16_t set_bit(uint16_t var, unsigned offset, unsigned value)
+{
+	if (value)
+		return var | BIT(offset);
+	else
+		return var &= ~BIT(offset);
+}
+
+/**
  * Sleep for specified time in milliseconds.
  *
  * @param msec Time to sleep
