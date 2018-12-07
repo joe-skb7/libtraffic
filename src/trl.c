@@ -55,7 +55,6 @@ struct trl {
 
 static struct trl trl;
 
-/* TODO: Init everything with red on start */
 int trl_init(void)
 {
 	int res, ret;
@@ -89,6 +88,9 @@ int trl_init(void)
 		ret = -4;
 		goto err3;
 	}
+
+	/* Init all traffic lights as red by default */
+	trl_set_burst(0x0000);
 
 	return 0;
 
