@@ -79,3 +79,9 @@ The project is licensed under the GPLv2.
 [2] https://hackaday.com/2009/09/22/introduction-to-ftdi-bitbang-mode/
 
 [3] https://github.com/joe-skb7/traffic-light-pcb
+
+[4] https://www.ftdichip.com/Support/Documents/AppNotes/AN_232R-01_Bit_Bang_Mode_Available_For_FT232R_and_Ft245R.pdf
+
+[5] https://electronics.stackexchange.com/questions/7525/how-can-i-control-128-or-more-solenoids
+
+[6] https://www.arduino.cc/en/Tutorial/ShiftOut
