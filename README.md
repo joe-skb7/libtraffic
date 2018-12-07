@@ -22,24 +22,47 @@ Hardware files for interface board and traffic light PCB can be found here: [3].
 
 TODO
 
-## Building the library
+## Building and installing
 
 1. Install dependencies:
 
 ```
-    $ sudo aptitude install libftdi1-2 libftdi1-dev devscripts pbuilder
+$ sudo aptitude install libftdi1-2 libftdi1-dev devscripts pbuilder debhelper
 ```
 
-2. Build and install Debian package:
+2. Build and install Debian package for this library:
 
 ```
-    $ make debian
-    $ sudo dpkg -i ../*.deb
+$ make debian
+$ sudo dpkg -i ../*.deb
 ```
 
-## udev rules
+3. Add your user to `dialout` group:
 
-TODO
+```
+$ sudo usermod -a -G dialout $USER
+```
+
+and re-login after that.
+
+4. Add udev rules for FTDI chip:
+
+Create `/etc/udev/rules.d/99-usb-serial.rules` file with next content:
+
+```
+SUBSYSTEM=="usb", ATTR{idVendor}=="0403", ATTR{idProduct}=="6001", MODE="0660", GROUP="dialout"
+```
+
+Now re-load rules:
+
+```
+$ sudo udevadm control --reload-rules
+$ sudo udevadm trigger
+```
+
+Now your library is installed and FTDI will work without root privileges.
+
+See `example/*` for insights on how to use `libtrl` in your app.
 
 ## Authors
 
