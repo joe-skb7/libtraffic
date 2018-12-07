@@ -124,7 +124,7 @@ int trl_set_burst(uint16_t mask)
 	 */
 	unsigned char buf[2*8*REG_NUM + 1] = { 0 };
 	/* Buffer iterator */
-	unsigned char *b = buf;
+	unsigned char *b;
 	int res, i;
 
 	assert(trl.ftdi != NULL);
