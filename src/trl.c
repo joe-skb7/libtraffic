@@ -143,7 +143,7 @@ int trl_set_burst(uint16_t mask)
 	for (i = TRL_COUNT - 1; i >= 0; i--) {
 		unsigned char state; /* lines state for current byte */
 
-		state = (mask & BIT(i)) ? GPIO_DATA : 0;
+		state = (mask & BIT(i)) ? 0 : GPIO_DATA;
 		*b++ = state;
 		state |= GPIO_CLOCK;
 		*b++ = state;
