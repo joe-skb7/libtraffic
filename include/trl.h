@@ -19,6 +19,7 @@ extern "C" {
  * Initialize traffic light library.
  *
  * Call this function before using the rest of API.
+ * After calling this function all traffic lights will be red.
  *
  * @return 0 on success or negative value on error.
  */
