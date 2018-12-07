@@ -115,7 +115,6 @@ int trl_set_one(int num, int state)
 	return 0;
 }
 
-/* TODO: Implement this one */
 int trl_set_burst(uint16_t mask)
 {
 	/*
@@ -128,8 +127,7 @@ int trl_set_burst(uint16_t mask)
 	unsigned char buf[2*8*REG_NUM + 1] = { 0 };
 	/* Buffer iterator */
 	unsigned char *b = buf;
-	int res;
-	int i;
+	int res, i;
 
 	assert(trl.ftdi != NULL);
 
@@ -142,10 +140,8 @@ int trl_set_burst(uint16_t mask)
 		return -1;
 	}
 
-	b = buf;
-
-
 	/* Count down, send data in reverse order */
+	b = buf;
 	for (i = TRL_COUNT - 1; i >= 0; i--) {
 		unsigned char state; /* lines state for current byte */
 
