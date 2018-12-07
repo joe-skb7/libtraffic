@@ -1,4 +1,0 @@
-In header:
-
-ifdef __cplusplus__
-extern C {
