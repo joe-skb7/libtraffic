@@ -24,11 +24,15 @@
 #define PIN_DCD		0x40
 #define PIN_RI		0x80
 
-#define GPIO0		PIN_CTS
-#define GPIO1		PIN_TXD
-#define GPIO2		PIN_RXD
-/* On SparkFun breakout board we have DTR in place of RTS, so let's use both */
-#define GPIO3		(PIN_RTS | PIN_DTR)
+#define GPIO_DATA	PIN_TXD
+#define GPIO_CLOCK	PIN_CTS
+#define GPIO_LATCH	PIN_DTR
+
+/* Number of shift registers */
+#define REG_NUM		2
+
+#define BIT(n)		(1 << (n))
+#define ARRAY_SIZE(a)	(sizeof(a) / sizeof(a[0]))
 
 #define TRL_LOG(f, fmt, ...)						\
 	do {								\
@@ -43,6 +47,7 @@ struct trl {
 
 static struct trl trl;
 
+/* TODO: Init everything with red on start */
 int trl_init(void)
 {
 	int res, ret;
@@ -94,43 +99,49 @@ int trl_set_one(int num, int state)
 /* TODO: Implement this one */
 int trl_set_burst(uint16_t mask)
 {
+	/*
+	 * Buffer for output on FTDI. Each byte represents lines to set
+	 * (each bit in byte is one line, like PIN_TXD). We issue all signals
+	 * in one USB write.
+	 *
+	 * 8 clock pulses (LOW, HIGH) and latch pulse (for 74HC595 chips).
+	 */
+	unsigned char buf[2*8*REG_NUM + 1] = { 0 };
+	/* Buffer iterator */
+	unsigned char *b = buf;
 	int res;
 	int i;
-	unsigned char data = 0;
 
 	assert(trl.ftdi != NULL);
 
-	(void)mask; /* Unused */
+	/* Set all GPIO lines to zero */
+	buf[0] = 0;
+	res = ftdi_write_data(trl.ftdi, buf, 1);
+	if (res < 0) {
+		TRL_LOG(stderr, "Error: Write #1 failed: %s\n",
+			ftdi_get_error_string(trl.ftdi));
+		return -1;
+	}
 
-	for (i = 0; i < 5; ++i) {
-		int j;
+	b = buf;
 
-		for (j = 0; j < 4; ++j) {
-			switch (j) {
-			case 0:
-				data = GPIO0;
-				break;
-			case 1:
-				data = GPIO1;
-				break;
-			case 2:
-				data = GPIO2;
-				break;
-			case 3:
-				data = GPIO3;
-				break;
-			}
 
-			res = ftdi_write_data(trl.ftdi, &data, 1);
-			if (res < 0) {
-				TRL_LOG(stderr,
-					"Error: Write failed for 0x%x: %s\n",
-					data, ftdi_get_error_string(trl.ftdi));
-				return -1;
-			}
+	/* Count down, send data in reverse order */
+	for (i = TRL_COUNT - 1; i >= 0; i--) {
+		unsigned char state; /* lines state for current byte */
 
-			msleep(125);
-		}
+		state = (mask & BIT(i)) ? GPIO_DATA : 0;
+		*b++ = state;
+		state |= GPIO_CLOCK;
+		*b++ = state;
+	}
+	*b++ = GPIO_LATCH;
+
+	res = ftdi_write_data(trl.ftdi, buf, ARRAY_SIZE(buf));
+	if (res < 0) {
+		TRL_LOG(stderr, "Error: Write #2 failed: %s\n",
+			ftdi_get_error_string(trl.ftdi));
+		return -1;
 	}
 
 	return 0;
