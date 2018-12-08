@@ -16,7 +16,7 @@
  * @param value New bit value (0 or 1)
  * @return New value of the variable (with changed bit)
  */
-uint16_t set_bit(uint16_t var, unsigned offset, unsigned value)
+uint16_t set_bit(uint16_t var, unsigned int offset, unsigned int value)
 {
 	if (value)
 		return var | BIT(offset);
@@ -57,8 +57,8 @@ int str2int(int *out, char *s, int base)
 	char *end;
 	long l;
 
-	assert(out != NULL);
-	assert(s != NULL);
+	assert(out);
+	assert(s);
 	assert(base >= 2 && base <= 36);
 
 	if (s[0] == '\0' || isspace(s[0]))

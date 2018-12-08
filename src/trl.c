@@ -39,11 +39,9 @@
 /* Number of shift registers */
 #define REG_NUM		2
 
-#define TRL_LOG(f, fmt, ...)						\
-	do {								\
-		fprintf(f, "%s: %s: " fmt,				\
-			LIB_NAME, __func__, ## __VA_ARGS__);		\
-	} while (0)
+#define TRL_LOG(f, fmt, ...)					\
+	fprintf(f, "%s: %s: " fmt,				\
+		LIB_NAME, __func__, ## __VA_ARGS__)		\
 
 struct trl {
 	struct ftdi_context *ftdi;	/* libftdi object */
@@ -56,10 +54,10 @@ int trl_init(void)
 {
 	int res, ret;
 
-	assert(trl.ftdi == NULL);
+	assert(!trl.ftdi);
 
 	trl.ftdi = ftdi_new();
-	if (trl.ftdi == NULL) {
+	if (!trl.ftdi) {
 		TRL_LOG(stderr, "Error: Can't allocate memory for FTDI obj\n");
 		return -1;
 	}
@@ -67,7 +65,7 @@ int trl_init(void)
 	res = ftdi_usb_open(trl.ftdi, FTDI_VID, FTDI_PID);
 	if (res < 0) {
 		TRL_LOG(stderr, "Error: Unable to open FTDI device: %d (%s)\n",
-				res, ftdi_get_error_string(trl.ftdi));
+			res, ftdi_get_error_string(trl.ftdi));
 		ret = -2;
 		goto err1;
 	}
@@ -122,12 +120,12 @@ int trl_set_burst(uint16_t mask)
 	 *
 	 * 8 clock pulses (LOW, HIGH) and latch pulse (for 74HC595 chips).
 	 */
-	unsigned char buf[2*8*REG_NUM + 1] = { 0 };
+	unsigned char buf[2 * 8 * REG_NUM + 1] = { 0 };
 	/* Buffer iterator */
 	unsigned char *b;
 	int res, i;
 
-	assert(trl.ftdi != NULL);
+	assert(trl.ftdi);
 
 	/* Set all GPIO lines to zero */
 	buf[0] = 0;
@@ -173,7 +171,7 @@ int trl_set_burst(uint16_t mask)
 
 void trl_exit(void)
 {
-	assert(trl.ftdi != NULL);
+	assert(trl.ftdi);
 
 	/*
 	 * FIXME: Without this sleep last ftdi_write_data() doesn't finish

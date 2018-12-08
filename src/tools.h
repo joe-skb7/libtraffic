@@ -14,7 +14,7 @@ enum str2int_err {
 	STR2INT_INCONVERTIBLE	= -3
 };
 
-uint16_t set_bit(uint16_t var, unsigned offset, unsigned value);
+uint16_t set_bit(uint16_t var, unsigned int offset, unsigned int value);
 void msleep(int msec);
 int str2int(int *out, char *s, int base);
 

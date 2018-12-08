@@ -95,7 +95,6 @@ clean:
 	$(Q)find src/ -name '*.o' -exec $(RM) {} \;
 	$(Q)find src/ -name '*.d' -exec $(RM) {} \;
 
-
 distclean: clean
 	@printf "  DISTCLEAN\n"
 	$(Q)$(RM) -f cscope.* tags
