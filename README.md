@@ -10,14 +10,26 @@ in project [3].
 
 Connect traffic light to your PC like this:
 
-    PC -> interface board -> traffic light boards
+    PC -> interface board -> traffic light boards (x10 pcs.)
 
 So by issuing this lib API routines you can switch traffic lights colors
 (red/green). Basically, when running this library functions, you specify
-desired color for chosen traffic light number. The library will generate
-correct serial code, send it via FT232 GPIO lines to shift register on
-interface board, which in turn will enable corresponding LED lines, so that
-desired traffic light displays desired color.
+desired color for chosen traffic light number. The whole chain is functioning
+as follows:
+
+- User tells to the library which traffic light he wants to set to which color
+- The library will generate correct serial code for shift registers on interface
+  board (for chosen colors on traffic lights)
+- This code will be sent via USB to FTDI module
+- FTDI module works in bit-bang mode, so it will issue corresponding signals to
+  its GPIO lines, sending serial code to shift registers
+- After receiving that serial code and latch signal, shift registers will
+  provide corresponding parallel code on their output pins
+- Each output line of shift registers controls one traffic light: 0V will switch
+  traffic light to green color, 5V will switch traffic light to red color
+- Then each output line from shift register goes to corresponding LED driver,
+  turning "green" channel to one state, and "red" channel to another state
+- This way desired traffic light displays desired color
 
 Hardware files for interface board and traffic light PCB can be found here: [3].
 
