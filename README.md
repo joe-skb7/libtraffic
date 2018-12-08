@@ -18,10 +18,6 @@ desired traffic light displays desired color.
 
 Hardware files for interface board and traffic light PCB can be found here: [3].
 
-## Prebuilt packages
-
-TODO
-
 ## Building and installing
 
 1. Install dependencies:
