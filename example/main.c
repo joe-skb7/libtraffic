@@ -1,4 +1,5 @@
-/**
+// SPDX-License-Identifier: GPL-2.0
+/*
  * Tiny app that demonstrates working with libtrl (Traffic Light Library).
  */
 
