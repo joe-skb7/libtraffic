@@ -141,15 +141,24 @@ int trl_set_burst(uint16_t mask)
 	/* Count down, send data in reverse order */
 	b = buf;
 	for (i = TRL_COUNT - 1; i >= 0; i--) {
-		unsigned char state; /* lines state for current byte */
+		unsigned char state = 0; /* lines state for current byte */
 
-		state = (mask & BIT(i)) ? 0 : GPIO_DATA;
+		/*
+		 * - for "green" state, issue logic "0" on GPIO_DATA line
+		 * - for "red" state, issue logic "1" on GPIO_DATA line
+		 */
+		if ((mask & BIT(i)) == TRL_STATE_GREEN)
+			state &= ~GPIO_DATA;
+		else
+			state |= GPIO_DATA;
+
 		*b++ = state;
 		state |= GPIO_CLOCK;
 		*b++ = state;
 	}
 	*b++ = GPIO_LATCH;
 
+	/* Send all signals in one USB transaction, to speed things up */
 	res = ftdi_write_data(trl.ftdi, buf, ARRAY_SIZE(buf));
 	if (res < 0) {
 		TRL_LOG(stderr, "Error: Write #2 failed: %s\n",
