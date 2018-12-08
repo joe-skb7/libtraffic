@@ -5,7 +5,10 @@
 C library for controlling traffic lights on GlobalLogic automotive hackathon
 (see [1]).
 
-Traffic lights are wired to interface board [3]. The chain is next:
+Hardware design files for traffic lights and interface boards can be found
+in project [3].
+
+Connect traffic light to your PC like this:
 
     PC -> interface board -> traffic light boards
 
