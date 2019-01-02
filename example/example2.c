@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
- * Tiny app that demonstrates working with libtrl (Traffic Light Library).
+ * Test app for libtrl (Traffic Light Library).
  */
 
 #include <tools.h>
