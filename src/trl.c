@@ -29,7 +29,7 @@
 #define GPIO_LATCH	PIN_DTR
 
 /*
- * In bitbang mode, the actual speed will be BITBANG * 16.
+ * In bitbang mode, the actual speed will be BAUDRATE * 16.
  * So, for BAUDRATE = 9600, we will get 9600 * 16 = 153600 bytes per second,
  * which gives us pulse width of 6.5 usec, which is sufficient for using
  * 74HC595 shift registers (must be >= 20 nsec by datasheet).
