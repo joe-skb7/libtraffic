@@ -10,16 +10,15 @@ extern "C" {
 
 #define EXPORT __attribute__((visibility("default")))
 
-/* Traffic lights count */
-#define TRL_COUNT	16
-#define TRL_STATE_RED	0
-#define TRL_STATE_GREEN	1
+#define TRL_COUNT		16	/* traffic lights count */
+#define TRL_STATE_RED		0	/* red LEDs = ON, green LEDs = OFF */
+#define TRL_STATE_GREEN		1	/* green LEDs = ON, red LEDs = OFF */
 
 /**
  * Initialize traffic light library.
  *
  * Call this function before using the rest of API.
- * After calling this function all traffic lights will be red.
+ * After calling this function all traffic lights will be in red state.
  *
  * @return 0 on success or negative value on error.
  */

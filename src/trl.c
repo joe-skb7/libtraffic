@@ -11,14 +11,14 @@
 
 #define LIB_NAME	"libtrl"
 
-/* USB "Vendor ID" and "Product ID" for FTDI chip */
+/* USB "Vendor ID" and "Product ID" numbers for FTDI chip */
 #define FTDI_VID	0x0403
 #define FTDI_PID	0x6001
 
-#define PIN_TXD		0x01  /* Orange (on FTDI cable) */
-#define PIN_RXD		0x02  /* Yellow (on FTDI cable) */
-#define PIN_RTS		0x04  /* Green  (on FTDI cable) */
-#define PIN_CTS		0x08  /* Brown  (on FTDI cable) */
+#define PIN_TXD		0x01 /* Orange (on FTDI cable) */
+#define PIN_RXD		0x02 /* Yellow (on FTDI cable) */
+#define PIN_RTS		0x04 /* Green  (on FTDI cable) */
+#define PIN_CTS		0x08 /* Brown  (on FTDI cable) */
 #define PIN_DTR		0x10
 #define PIN_DSR		0x20
 #define PIN_DCD		0x40
@@ -29,7 +29,7 @@
 #define GPIO_LATCH	PIN_DTR
 
 /*
- * In bitbang mode, the actual speed will be BAUDRATE * 16.
+ * When FTDI chip is in bitbang mode, the actual speed will be BAUDRATE * 16.
  * So, for BAUDRATE = 9600, we will get 9600 * 16 = 153600 bytes per second,
  * which gives us pulse width of 6.5 usec, which is sufficient for using
  * 74HC595 shift registers (must be >= 20 nsec by datasheet).
@@ -84,7 +84,7 @@ int trl_init(void)
 		goto err3;
 	}
 
-	/* Init all traffic lights as red by default */
+	/* Set all traffic lights to red state by default */
 	trl_set_burst(0x0000);
 
 	return 0;
@@ -114,11 +114,18 @@ int trl_set_one(int num, int state)
 int trl_set_burst(uint16_t mask)
 {
 	/*
-	 * Buffer for output on FTDI. Each byte represents lines to set
-	 * (each bit in byte is one line, like PIN_TXD). We issue all signals
-	 * in one USB write.
+	 * FTDI output buffer:
+	 *   - each byte of this array represents all FTDI GPIO lines
+	 *   - each bit represents the state of one GPIO line, like PIN_TXD
 	 *
-	 * 8 clock pulses (LOW, HIGH) and latch pulse (for 74HC595 chips).
+	 * We issue all signals in one USB transmission, to achieve maximal
+	 * possible transmission rate.
+	 *
+	 * This buffer contains next pulses:
+	 *   - 8 clock+data pulses (1 pulse = 2 bytes, for LOW/HIGH states),
+	 *     per one shift register
+	 *   - 1 latch pulse (1 byte, only for HIGH state), for all shift
+	 *     registers
 	 */
 	unsigned char buf[2 * 8 * REG_NUM + 1] = { 0 };
 	/* Buffer iterator */
@@ -136,10 +143,14 @@ int trl_set_burst(uint16_t mask)
 		return -1;
 	}
 
-	/* Count down, send data in reverse order */
+	/*
+	 * Prepare FTDI buffer for sending signals to shift registers.
+	 * We are sending data to shift registers in reverse order, because
+	 * shift register is basically a "Last In First Out".
+	 */
 	b = buf;
 	for (i = TRL_COUNT - 1; i >= 0; i--) {
-		unsigned char state = 0; /* lines state for current byte */
+		unsigned char state = 0; /* GPIO lines state for current byte */
 
 		/*
 		 * - for "green" state, issue logic "0" on GPIO_DATA line
@@ -174,8 +185,8 @@ void trl_exit(void)
 	assert(trl.ftdi);
 
 	/*
-	 * FIXME: Without this sleep last ftdi_write_data() doesn't finish
-	 *        correctly.
+	 * NOTE: Without this sleep last ftdi_write_data() doesn't finish
+	 *       correctly.
 	 */
 	msleep(100);
 
