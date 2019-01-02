@@ -39,9 +39,16 @@
 /* Number of shift registers */
 #define REG_NUM		2
 
+/* Logging macros */
 #define TRL_LOG(f, fmt, ...)					\
 	fprintf(f, "%s: %s: " fmt,				\
-		LIB_NAME, __func__, ##__VA_ARGS__)		\
+		LIB_NAME, __func__, ##__VA_ARGS__)
+#define TRL_LOGE(fmt, ...)					\
+	fprintf(stderr, "%s: %s: ERROR: " fmt,			\
+		LIB_NAME, __func__, ##__VA_ARGS__)
+#define TRL_LOGI(fmt, ...)					\
+	printf("%s: %s: INFO: " fmt,				\
+		LIB_NAME, __func__, ##__VA_ARGS__)
 
 struct trl {
 	struct ftdi_context *ftdi;	/* libftdi object */
@@ -58,28 +65,28 @@ int trl_init(void)
 
 	trl.ftdi = ftdi_new();
 	if (!trl.ftdi) {
-		TRL_LOG(stderr, "Error: Can't allocate memory for FTDI obj\n");
+		TRL_LOGE("Can't allocate memory for FTDI obj\n");
 		return -1;
 	}
 
 	res = ftdi_usb_open(trl.ftdi, FTDI_VID, FTDI_PID);
 	if (res < 0) {
-		TRL_LOG(stderr, "Error: Unable to open FTDI device: %d (%s)\n",
-			res, ftdi_get_error_string(trl.ftdi));
+		TRL_LOGE("Unable to open FTDI device: %d (%s)\n", res,
+			ftdi_get_error_string(trl.ftdi));
 		ret = -2;
 		goto err1;
 	}
 
 	res = ftdi_set_bitmode(trl.ftdi, 0xff, BITMODE_BITBANG);
 	if (res < 0) {
-		TRL_LOG(stderr, "Error: Can't enable bitbang\n");
+		TRL_LOGE("Can't enable bitbang\n");
 		ret = -3;
 		goto err2;
 	}
 
 	res = ftdi_set_baudrate(trl.ftdi, BAUDRATE);
 	if (res < 0) {
-		TRL_LOG(stderr, "Error: Can't set baudrate\n");
+		TRL_LOGE("Can't set baudrate\n");
 		ret = -4;
 		goto err3;
 	}
@@ -138,7 +145,7 @@ int trl_set_burst(uint16_t mask)
 	buf[0] = 0;
 	res = ftdi_write_data(trl.ftdi, buf, 1);
 	if (res < 0) {
-		TRL_LOG(stderr, "Error: Write #1 failed: %s\n",
+		TRL_LOGE("Write #1 failed: %s\n",
 			ftdi_get_error_string(trl.ftdi));
 		return -1;
 	}
@@ -170,7 +177,7 @@ int trl_set_burst(uint16_t mask)
 	/* Send all signals in one USB transaction, to speed things up */
 	res = ftdi_write_data(trl.ftdi, buf, ARRAY_SIZE(buf));
 	if (res < 0) {
-		TRL_LOG(stderr, "Error: Write #2 failed: %s\n",
+		TRL_LOGE("Write #2 failed: %s\n",
 			ftdi_get_error_string(trl.ftdi));
 		return -1;
 	}
