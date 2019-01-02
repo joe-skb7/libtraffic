@@ -21,7 +21,7 @@ uint16_t set_bit(uint16_t var, unsigned int offset, unsigned int value)
 	if (value)
 		return var | BIT(offset);
 	else
-		return var &= ~BIT(offset);
+		return var & ~BIT(offset);
 }
 
 /**
