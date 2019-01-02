@@ -41,7 +41,7 @@
 
 #define TRL_LOG(f, fmt, ...)					\
 	fprintf(f, "%s: %s: " fmt,				\
-		LIB_NAME, __func__, ## __VA_ARGS__)		\
+		LIB_NAME, __func__, ##__VA_ARGS__)		\
 
 struct trl {
 	struct ftdi_context *ftdi;	/* libftdi object */
